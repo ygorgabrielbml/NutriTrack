@@ -15,6 +15,7 @@ Quais ferramentas nós utilizaremos?
 -Biblioteca Transformers da Hugging face para utilizar o processamento de linguagem natural;
 -Biblioteca SQLite3 para formação e gerenciamento de informações no banco de dados;
 -Biblioteca Requests para receber as informações da API.
+-Biblioteca PyTorch
 
 Nas conversas mais atuais que tivemos, os responsáveis por essa parte são Ygor, Henrique e Edvaldo.
 ---------------------------------------------------------------------------------------------------
