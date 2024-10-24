@@ -1,0 +1,37 @@
+Rapaziada, preciso que leiam isso. Nesse projeto iremos contar com uma API desenvolvida pelo governo dos estados unidos, ela nos informará os dados nutricionais que iremos precisar como por exemplo: proteinas, açúcares, gorduras e carboidratos.
+Além disso, iremos utilizar oprocessamento de linguagem natural ou o "PLN" para auxiliar na filtração de informações e até mesmo na tradução.
+Para prosseguir com o código, no momento, é necessário fazer duas instalações a da biblioteca requests (para api) e a da biblioteca transformers para utilização do PLN.
+Para instala-las, é necessário abrir o seu prompt de comando, pressionando as teclas "windows" + "r" simultaneamente, inserindo "cmd" e buscando. Após isso, vocês colocarão os seguintes comandos. Sem as aspas "pip install requests" e logo após a instalação deste, colocar "pip install transformers".
+Vocês possivelmente ja sabem fazer tudo o que foi dito, eu faço esse texto no intuito de que até mesmo para alguem que tiver dificuldade possa entender.
+
+Atualmente o projeto NutriTrack está sendo desenvolvido em duas partes;
+
+A do backend
+- Essa parte será responsável por filtrar as informações contidas na api, representa-las em nossos código e traduzi-las.
+- Essa parte também será responsável por armazenar todas as informações que conseguimos e guarda-las em um banco de dados do aplicativo.
+
+Quais ferramentas nós utilizaremos?
+-Linguagem Python;
+-Biblioteca Transformers da Hugging face para utilizar o processamento de linguagem natural;
+-Biblioteca SQLite3 para formação e gerenciamento de informações no banco de dados;
+-Biblioteca Requests para receber as informações da API.
+
+Nas conversas mais atuais que tivemos, os responsáveis por essa parte são Ygor, Henrique e Edvaldo.
+---------------------------------------------------------------------------------------------------
+A do frontend
+- Essa parte será igualmente importante, aqui será onde nós conseguiremos transformar nosso aplicativo em algo palpável, é preciso que haja bastante contato dos responsáveis por essa parte com o resto da equipe para alterações e melhorias.
+- O objetivo é utilizarmos as ferramentas disponíveis para criar algo próximo a um app moderno e 100% funcional, simulando ao máximo uma boa experiência para o usuário final.
+
+Quais ferramentos nós utilizaremos?
+
+-Linguagem Python;
+-Biblioteca Tkinter;
+-Possívelmente FIGMA.
+
+Nas conversas mais atuais que tivemos, os responsáveis por essa parte são Luna e Andrey
+--------------------------------------------------------------------------------------------------
+
+Rapaziada, por enquanto é só, espero que possamos trabalhar bem em equipe e fazer um aplicativo interessante.
+Lembrem-se, é importante discutir bastante sobre possíveis melhorias para nosso trabalho, opiniões construtivas sempre serão bem vindas!
+
+By Ygor Brandão.
