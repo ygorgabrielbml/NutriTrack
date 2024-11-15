@@ -6,12 +6,15 @@ from IPython.display import display  # Importando o display
 api_key = "HZggsOOEiOiWrnsS5vxzHwgygzuMJm7WHYPV6CIG"
 base_url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
-def buscar_alimento(food_input):
+def find_food(food_input):
     """
-    Função para buscar alimentos na API USDA e exibir informações básicas.
+    Função para buscar alimentos na API USDA e retornar um DataFrame com informações básicas.
     
     Parâmetros:
     food_input (str): Nome do alimento a ser pesquisado.
+    
+    Retorna:
+    pd.DataFrame: DataFrame contendo as informações dos alimentos encontrados ou None se não houver resultados.
     """
     params = {
         "api_key": api_key,
@@ -30,36 +33,21 @@ def buscar_alimento(food_input):
         # Verifica se há resultados
         if not data_foods:
             print("Não encontramos esse alimento em nosso banco de dados.")
+            return None
         else:
             dataframe = pd.DataFrame(data_foods)
             
-            # Tabela principal com informações básicas dos alimentos
-            foods = dataframe[
-                [
-                    "description",
-                    "fdcId",
-                    "foodCategory",
-                    "ndbNumber"
-                ]
-            ]
+            # Filtra as colunas disponíveis de forma segura
+            columns_to_include = [col for col in ["description", "fdcId", "foodCategory", "ndbNumber"] if col in dataframe.columns]
+            foods = dataframe[columns_to_include]
             
             print("Tabela Principal - Informações Básicas dos Alimentos:")
             display(foods)
-            
-            # Bloco comentado para exibir nutrientes
-            """
-            # Explode a coluna 'foodNutrients' para exibir os nutrientes em uma tabela separada
-            foods_exploded = dataframe.explode("foodNutrients").reset_index(drop=True)
-            nutrients_df = pd.json_normalize(foods_exploded["foodNutrients"])
-            nutrients_df["fdcId"] = foods_exploded["fdcId"]  # Adiciona o fdcId para identificação
-            
-            # Exibe a tabela de nutrientes separadamente
-            print("\nTabela de Nutrientes:")
-            display(nutrients_df[["fdcId", "nutrientName", "value", "unitName"]])
-            """
+            return foods  # Retorna o DataFrame para que possa ser manipulado externamente
     else:
         print("Erro ao fazer a busca:", response.status_code)
+        return None
 
-# Exemplo de uso da função
-alimento = input("Pesquise por um alimento em inglês: ")
-buscar_alimento(alimento)
+# Exemplo de uso da função (comentado para evitar execução ao ser importado)
+# alimento = input("Pesquise por um alimento em inglês: ")
+# find_food(alimento)
