@@ -24,7 +24,6 @@ def get_food_data(food_name):
 def main():
     food_name = input("Digite o nome do alimento que deseja buscar: ")
     food_data = get_food_data(food_name)
-    
     if isinstance(food_data, dict):
         # Exibe informações do alimento (exemplo com alguns dados)
         print("Nome do Alimento:", food_data["description"])
