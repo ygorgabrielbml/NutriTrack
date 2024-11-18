@@ -37,7 +37,6 @@ def create_meal_database():
 def create_new_meal():
     
     #Função para criar uma nova refeição com alimentos selecionados pelo usuário.
-    
     create_meal_database()  # Garante que as tabelas existem
 
     # Solicita o nome da refeição e o número de ingredientes

@@ -49,5 +49,5 @@ def find_food(food_input):
         return None
 
 # Exemplo de uso da função (comentado para evitar execução ao ser importado)
-# alimento = input("Pesquise por um alimento em inglês: ")
-# find_food(alimento)
+#alimento = input("Pesquise por um alimento em inglês: ")
+#find_food(alimento)
