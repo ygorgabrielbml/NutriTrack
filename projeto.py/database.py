@@ -17,13 +17,15 @@ def adcionar_usuario(login, senha):
         con.close()
 
 #função para remover usuário
-def deletar_usuario(login):
+def deletar_usuario(nome):
     con = sqlite3.connect("./NutriTrack/source/models/database.db")
     cursor = con.cursor()
 
-    cursor.execute("DELETE FROM dados where login = ?", (login,))
+    cursor.execute("DELETE FROM usuario where nome = ?", (nome,))
     con.commit()
     print("Usuário removido com sucesso.")
 
     cursor.close()
     con.close()
+
+deletar_usuario("henrique")
