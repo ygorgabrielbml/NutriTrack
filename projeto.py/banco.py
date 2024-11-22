@@ -30,3 +30,35 @@ cursor.execute("""
 con.commit()
 cursor.close()
 con.close()
+
+def adicionar_usuario(login, senha):
+    con = sq.connect("registro.db")
+    cursor = con.cursor()
+    try:
+        cursor.execute("INSERT INTO usuarios (login, senha) VALUES (?, ?)", (login, senha))
+        con.commit()
+        print(f"Usário '{login}' adicionado com sucesso!")
+    except sq.IntegrityError:
+        print(f"Erro, o login '{login}' já existe.")
+    except Exception as e:
+        print(f"Erro ao adicionar o usuário: {e}")
+    finally:
+        cursor.close()
+        con.close()
+
+def deletar_usuario(login):
+    con = sq.connect("registro.db")
+    cursor = con.cursor()
+    try:
+        cursor.execute("DELETE FROM usuarios where login = ?", (login,))
+        con.commit()
+        if cursor.rowcount > 0:
+            print(f"Usuário {login} deletado com sucesso!")
+        else:
+            print(f"Erro: usuário {login} não encontrado.")
+    except Exception as e:
+        print(f"Erro ao deletar usuário {e}")
+    finally:
+        cursor.close()
+        con.close()
+        
