@@ -5,40 +5,7 @@ import sqlite3 as sq
 from datetime import datetime
 from source.api.searchFood import find_food
 
-def create_meal_database():
-    
-    #Cria o banco de dados e as tabelas `meals` e `meal_ingredients`, se não existirem.
-    
-    conn = sq.connect("meal.db")
-    cursor = conn.cursor()
-
-    # Tabela para as refeições
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS meals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            meal_name TEXT,
-            create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    # Tabela para os ingredientes de cada refeição
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS meal_ingredients (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            meal_id INTEGER,
-            ingredient TEXT,
-            FOREIGN KEY (meal_id) REFERENCES meals(id)
-        )
-    """)
-    
-    conn.commit()
-    conn.close()
-
 def create_new_meal():
-    
-    #Função para criar uma nova refeição com alimentos selecionados pelo usuário.
-    create_meal_database()  # Garante que as tabelas existem
-
     # Solicita o nome da refeição e o número de ingredientes
     meal_name = input("Insira o nome da sua nova refeição: ")
     ingredient_num = int(input("Insira o número de ingredientes que deseja adicionar à refeição: "))
