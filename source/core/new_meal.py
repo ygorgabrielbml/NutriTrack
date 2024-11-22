@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import sqlite3 as sq
 from datetime import datetime
-from source.api.searchFood import find_food
+from source.api.searchFood1 import find_food
 
 def create_new_meal():
     # Solicita o nome da refeição e o número de ingredientes
