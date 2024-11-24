@@ -6,7 +6,7 @@ from registrarUsuario import adicionar_usuarioDB # type: ignore
 from gerarTokenAcesso import gerarToken # type: ignore
 
 
-class Usuario:
+class Registro:
     def __init__(self, nome, senha, genero, peso, idade, altura):
         self.nome = nome
         self.senha = senha

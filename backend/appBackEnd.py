@@ -4,11 +4,13 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("InfoPerfilC"), "NutriTrack/backend/source/controllers")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("verificarSessao"), "NutriTrack/backend/source/models")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("login"), "NutriTrack/backend/source/controllers")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname("registro"), "NutriTrack/backend/source/controllers")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("atualizarPeso"), "NutriTrack/backend/source/models")))
 from InfoPerfilC import infoPerfil # type: ignore
 from verificarSessao import verificar_sessao # type: ignore
 from login import Login # type: ignore
 from atualizarPeso import atualizar_peso # type: ignore
+from registro import Registro # type: ignore
 
 
 
@@ -40,10 +42,24 @@ def get_infoPerfil():
 def update_peso():
     token = verificar_sessao()
     novo_peso = request.json.get("peso")
-    print(novo_peso, token)
     atualizar_peso(novo_peso, token)
     return jsonify({"atualização": "bem sucedida"})
 
+@app.route("/registro", methods=["POST"])
+def fazer_registro():
+    nome = request.json.get("usuario")
+    senha = request.json.get("senha")
+    csenha = request.json.get("csenha")
+    peso = request.json.get("peso")
+    genero = request.json.get("genero")
+    idade = request.json.get("idade")
+    altura = request.json.get("altura")
+    if senha == csenha:
+        registro = Registro(nome, senha, genero, peso, idade, altura)
+        registro.adicionar_usuario()
+        return "usuario adicionado com sucesso"
+    else:
+        return "as senhas são diferentes"
 
 if __name__ == "__main__":
     app.run(debug=True)
