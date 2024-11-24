@@ -5,12 +5,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname("InfoPerfilC"), "Nu
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("verificarSessao"), "NutriTrack/backend/source/models")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("login"), "NutriTrack/backend/source/controllers")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("registro"), "NutriTrack/backend/source/controllers")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname("mudarSenha"), "NutriTrack/backend/source/controllers")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("atualizarPeso"), "NutriTrack/backend/source/models")))
 from InfoPerfilC import infoPerfil # type: ignore
 from verificarSessao import verificar_sessao # type: ignore
 from login import Login # type: ignore
 from atualizarPeso import atualizar_peso # type: ignore
 from registro import Registro # type: ignore
+from mudarSenha import MudarSenha # type: ignore
 
 
 
@@ -60,6 +62,13 @@ def fazer_registro():
         return "usuario adicionado com sucesso"
     else:
         return "as senhas são diferentes"
-
+    
+@app.route("/mudar_senha", methods={"POST"})
+def alterar_senha():
+    nome = request.json.get("usuario")
+    senha = request.json.get("senha")
+    nova_senha = MudarSenha(nome, senha)
+    nova_senha.mudar_senha()
+    return "senha alterada"
 if __name__ == "__main__":
     app.run(debug=True)

@@ -113,7 +113,6 @@ class ProfileScreen(ctk.CTkFrame):
         novo_peso = float(self.weight_entry.get())
         try:
             response = requests.post(f"{api_url}/perfil/mudar_peso", json={"peso": novo_peso})
-            print(response)
             if response.status_code == 200:
                 mensagem = "peso atualizado"
             else:

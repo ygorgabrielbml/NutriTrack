@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
+import requests
 
 
 class ForgotPasswordFrame(ctk.CTkFrame):
@@ -94,6 +95,9 @@ class ForgotPasswordFrame(ctk.CTkFrame):
         elif new_password != confirm_new_password:
             print("Passwords do not match!")
         else:
-            print("Password reset successfully!")
-            print(f"Username: {username}, New Password: {new_password}")
-            # Aqui você pode adicionar lógica para atualizar a senha no banco de dados
+            api_url = "http://127.0.0.1:5000"
+            response = requests.post(f"{api_url}/mudar_senha", json={"usuario": username, "senha": new_password})
+            if response.status_code == 200:
+                return "senha alterada"
+            else:
+                return "erro"
