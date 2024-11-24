@@ -1,10 +1,10 @@
 import customtkinter as ctk
+import os
 from login_frame import LoginFrame
-from home_frame import HomeScreen
+from home_screen import HomeScreen
 from register_frame import RegisterFrame
 from forgot_password_frame import ForgotPasswordFrame
 from profile_screen import ProfileScreen
-import os
 
 
 class LoginApp:
@@ -17,77 +17,105 @@ class LoginApp:
         self.app = ctk.CTk()
         self.app.title("NutriTrack")
 
-        # Definir o tamanho fixo da janela
-        largura_janela = 600
-        altura_janela = 440
+        # Definir o ícone do aplicativo usando wm_iconbitmap
+        icon_path = os.path.join(self.assets_dir, "dieta.ico")
+        if os.path.exists(icon_path):
+            self.app.wm_iconbitmap(icon_path)
+        else:
+            print(f"Ícone não encontrado: {icon_path}")
 
-        # Centralizar a janela na tela
+        # Inicializar os frames
+        self.frames = {}
+        self.current_frame = None
+
+        # Criar todos os frames
+        self.create_frames()
+
+        # Exibir a tela inicial (Login)
+        self.show_frame("login")
+
+    def set_window_size(self, width, height):
+        """Define o tamanho da janela e centraliza na tela."""
         largura_tela = self.app.winfo_screenwidth()
         altura_tela = self.app.winfo_screenheight()
 
-        pos_x = (largura_tela - largura_janela) // 2
-        pos_y = (altura_tela - altura_janela) // 2
+        pos_x = (largura_tela - width) // 2
+        pos_y = (altura_tela - height) // 2
 
-        self.app.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
+        self.app.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
 
-        self.user_data = {
-            "name": "John Doe",  # Nome fictício para teste
-            "gender": "Male",
-            "age": "25",
-            "height": "175",
-            "weight": "70",
+    def create_frames(self):
+        """Precarrega todos os frames com tamanhos consistentes."""
+        # Frame de Login
+        self.frames["login"] = {
+            "frame": LoginFrame(self.app, self),
+            "width": 600,
+            "height": 440
+        }
+        # Frame de Home
+        self.frames["home"] = {
+            "frame": HomeScreen(self.app, self),
+            "width": 1400,
+            "height": 900
+        }
+        # Frame de Registro
+        self.frames["register"] = {
+            "frame": RegisterFrame(self.app, self),
+            "width": 600,
+            "height": 440  # Altura ideal para registro
+        }
+        # Frame de Recuperação de Senha
+        self.frames["forgot_password"] = {
+            "frame": ForgotPasswordFrame(self.app, self),
+            "width": 600,
+            "height": 440
+        }
+        # Frame de Perfil
+        self.frames["profile"] = {
+            "frame": ProfileScreen(self.app, self, {
+                "name": "John Doe",
+                "gender": "Male",
+                "age": "25",
+                "height": "175",
+                "weight": "70",
+            }),
+            "width": 500,  # Largura menor para a tela de perfil
+            "height": 400  # Altura ajustada para a tela de perfil
         }
 
-        # Impedir redimensionamento
-        self.app.resizable(False, False)
+    def show_frame(self, frame_name):
+        """Exibe o frame especificado e ajusta a janela."""
+        if self.current_frame == frame_name:
+            return
 
-        # Inicializar a tela de login
-        self.current_frame = None
-        self.show_login_frame()
+        if self.current_frame:
+            self.frames[self.current_frame]["frame"].pack_forget()
+
+        frame_data = self.frames[frame_name]
+        self.set_window_size(frame_data["width"], frame_data["height"])
+
+        frame_data["frame"].pack(expand=True, fill="both")
+        self.current_frame = frame_name
 
     def show_login_frame(self):
-        """Exibe a tela de login."""
-        if self.current_frame:
-            self.current_frame.destroy()
-
-        self.current_frame = LoginFrame(self.app, self)
-        self.current_frame.pack(expand=True, fill="both")
+        self.show_frame("login")
 
     def show_home_frame(self):
-        """Exibe a tela de boas-vindas."""
-        if self.current_frame:
-            self.current_frame.destroy()
-
-        self.current_frame = HomeScreen(self.app, self)
-        self.current_frame.pack(expand=True, fill="both")
+        self.show_frame("home")
 
     def show_register_frame(self):
-        """Exibe a tela de registro."""
-        if self.current_frame:
-            self.current_frame.destroy()
-
-        self.current_frame = RegisterFrame(self.app, self)
-        self.current_frame.pack(expand=True, fill="both")
+        self.show_frame("register")
 
     def show_forgot_password_frame(self):
-        """Exibe a tela de recuperação de senha."""
-        if self.current_frame:
-            self.current_frame.destroy()
+        self.show_frame("forgot_password")
 
-        self.current_frame = ForgotPasswordFrame(self.app, self)
-        self.current_frame.pack(expand=True, fill="both")
-    
     def show_profile_frame(self):
-        """Exibe a tela de perfil."""
-        if self.current_frame:
-            self.current_frame.destroy()
-
-        self.current_frame = ProfileScreen(self.app, self, self.user_data)
-        self.current_frame.pack(expand=True, fill="both")
+        self.show_frame("profile")
 
     def run(self):
         """Inicia o loop principal do aplicativo."""
         self.app.mainloop()
+
 
 if __name__ == "__main__":
     app = LoginApp()
