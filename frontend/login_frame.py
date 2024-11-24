@@ -1,12 +1,14 @@
 import customtkinter as ctk
 from PIL import Image
 import os
+import requests
 
 
 class LoginFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
+        self.controller = controller
         # Carregar imagens
         self.img1_path = os.path.join(controller.assets_dir, "pattern.png")
         self.img1 = ctk.CTkImage(Image.open(self.img1_path), size=(600, 440))
@@ -55,7 +57,7 @@ class LoginFrame(ctk.CTkFrame):
 
         # Botão de Login
         self.login_button = ctk.CTkButton(
-            master=self.frame, width=220, text="Login", corner_radius=6, command=controller.show_home_frame
+            master=self.frame, width=220, text="Login", corner_radius=6, command=self.efetuar_login
         )
         self.login_button.place(x=50, y=240)
 
@@ -79,3 +81,17 @@ class LoginFrame(ctk.CTkFrame):
     def forgot_password_action(self):
         """Função chamada ao clicar em 'Esqueceu a senha?'."""
         print("Esqueceu a senha foi clicado!")
+
+    def efetuar_login(self):
+        api_url = "http://127.0.0.1:5000"
+        login_input = self.username_entry.get()
+        senha_input = self.password_entry.get()
+        try:
+            response = requests.post(f"{api_url}/login", json={"usuario":login_input, "senha": senha_input})
+            if response.status_code == 200:
+                mensagem = response.json().get("mensagem")
+                self.controller.show_home_frame()
+            else:
+                pass
+        except requests.exceptions.RequestException as e:
+            print(f"erro ao conectar ao servidor: {e}")

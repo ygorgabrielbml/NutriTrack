@@ -30,14 +30,6 @@ class LoginApp:
 
         self.app.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
 
-        self.user_data = {
-            "name": "John Doe",  # Nome fictício para teste
-            "gender": "Male",
-            "age": "25",
-            "height": "175",
-            "weight": "70",
-        }
-
         # Impedir redimensionamento
         self.app.resizable(False, False)
 
@@ -82,12 +74,13 @@ class LoginApp:
         if self.current_frame:
             self.current_frame.destroy()
 
-        self.current_frame = ProfileScreen(self.app, self, self.user_data)
+        self.current_frame = ProfileScreen(self.app, self)
         self.current_frame.pack(expand=True, fill="both")
 
     def run(self):
         """Inicia o loop principal do aplicativo."""
         self.app.mainloop()
+    
 
 if __name__ == "__main__":
     app = LoginApp()

@@ -1,11 +1,11 @@
 import sqlite3 as sq
 
-def nova_sessao(status, tokenAcesso):
+def atualizar_peso(peso, tokenAcesso):
     con = sq.connect("NutriTrack/backend/source/models/database.db")
     cursor = con.cursor()
-    query = "INSERT INTO sessao (status, tokenAcesso) VALUES (?, ?)"
-    cursor.execute(query, (status, tokenAcesso))
+    query = "UPDATE usuario SET peso = ? WHERE tokenAcesso = ?"
+    cursor.execute(query, (peso, tokenAcesso))
     con.commit()
     cursor.close()
     con.close()
-    
+

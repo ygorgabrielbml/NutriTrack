@@ -1,11 +1,11 @@
 import customtkinter as ctk
-
+import requests
 
 class ProfileScreen(ctk.CTkFrame):
-    def __init__(self, parent, controller, user_data):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.user_data = user_data  # Dados do usuário fornecidos ao registrar
+        self.user_data = self.get_userdata()  # Dados do usuário fornecidos ao registrar
 
         # Configurar a janela
         largura_janela = 600
@@ -28,16 +28,16 @@ class ProfileScreen(ctk.CTkFrame):
         self.info_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
         # Exibir informações do usuário em colunas
-        self.name_label = self.create_info_label("Name", self.user_data["name"])
+        self.name_label = self.create_info_label("Name", self.user_data["nome"])
         self.name_label.grid(row=0, column=0, padx=20, pady=10, sticky="w")
 
-        self.gender_label = self.create_info_label("Gender", self.user_data["gender"])
+        self.gender_label = self.create_info_label("Gender", self.user_data["genero"])
         self.gender_label.grid(row=1, column=0, padx=20, pady=10, sticky="w")
 
-        self.age_label = self.create_info_label("Age", self.user_data["age"])
+        self.age_label = self.create_info_label("Age", self.user_data["idade"])
         self.age_label.grid(row=2, column=0, padx=20, pady=10, sticky="w")
 
-        self.height_label = self.create_info_label("Height", f"{self.user_data['height']} cm")
+        self.height_label = self.create_info_label("Height", f"{self.user_data['altura']} cm")
         self.height_label.grid(row=3, column=0, padx=20, pady=10, sticky="w")
 
         # Campo para editar peso
@@ -45,7 +45,7 @@ class ProfileScreen(ctk.CTkFrame):
         self.weight_label.grid(row=4, column=0, padx=20, pady=10, sticky="w")
 
         self.weight_entry = ctk.CTkEntry(self.info_frame, width=150, justify="center")
-        self.weight_entry.insert(0, str(self.user_data["weight"]))
+        self.weight_entry.insert(0, str(self.user_data["peso"]))
         self.weight_entry.grid(row=4, column=1, padx=10, pady=10)
 
         # Botão para salvar o peso atualizado
@@ -78,8 +78,7 @@ class ProfileScreen(ctk.CTkFrame):
     def update_weight(self):
         """Atualiza o peso do usuário."""
         try:
-            new_weight = float(self.weight_entry.get())
-            self.user_data["weight"] = new_weight
+            self.update_peso()
             ctk.CTkLabel(
                 self.info_frame, text="Weight updated successfully!", font=("Century Gothic", 12), text_color="green"
             ).grid(row=6, columnspan=2, pady=5)
@@ -91,3 +90,34 @@ class ProfileScreen(ctk.CTkFrame):
     def logout_action(self):
         """Função chamada ao clicar no botão de logout."""
         self.controller.show_login_frame()  # Redireciona para a tela de login
+
+    def get_userdata(self):
+        api_url = "http://127.0.0.1:5000"
+        try:
+            # Faz a requisição GET
+            dados_perfil = requests.get(f"{api_url}/perfil/mostrar_infos")
+            
+            # Verifica o status code
+            if dados_perfil.status_code == 200:
+                return dados_perfil.json()  # Retorna os dados em formato JSON
+            
+            else:
+                print(f"Erro na API: {dados_perfil.status_code}")
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Erro na requisição: {e}")
+            return None
+
+    def update_peso(self):
+        api_url = "http://127.0.0.1:5000"
+        novo_peso = float(self.weight_entry.get())
+        try:
+            response = requests.post(f"{api_url}/perfil/mudar_peso", json={"peso": novo_peso})
+            print(response)
+            if response.status_code == 200:
+                mensagem = "peso atualizado"
+            else:
+                mensagem = "erro"
+        except requests.exceptions.RequestException as e:
+            print(f"erro: {e}")
+
