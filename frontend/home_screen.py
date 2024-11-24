@@ -64,30 +64,13 @@ class HomeScreen(ctk.CTkFrame):
 
         # Componentes principais
         self.food_list = FoodList(self.main_frame)
-        self.food_list.place(relx=0.05, rely=0.05, relwidth=0.3, relheight=0.75)
+        self.food_list.place(relx=0.05, rely=0.05, relwidth=0.3, relheight=0.82)
 
         self.nutrient_info = NutrientInfo(self.main_frame)
-        self.nutrient_info.place(relx=0.37, rely=0.05, relwidth=0.3, relheight=0.75)
+        self.nutrient_info.place(relx=0.37, rely=0.05, relwidth=0.3, relheight=0.82)
 
         self.food_registration = FoodRegistration(self.main_frame)
-        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=0.75)
-
-        # Bottom section (Historico e favoritos)
-        self.history_frame = ctk.CTkFrame(self.main_frame, fg_color="#3D3D3D", corner_radius=10)
-        self.history_frame.place(relx=0.05, rely=0.85, relwidth=0.4, relheight=0.15)
-
-        self.history_label = ctk.CTkLabel(
-            self.history_frame, text="History", font=("Century Gothic", 18, "bold"), text_color="white"
-        )
-        self.history_label.pack(pady=10)
-
-        self.favorites_frame = ctk.CTkFrame(self.main_frame, fg_color="#3D3D3D", corner_radius=10)
-        self.favorites_frame.place(relx=0.55, rely=0.85, relwidth=0.4, relheight=0.15)
-
-        self.favorites_label = ctk.CTkLabel(
-            self.favorites_frame, text="Favorites", font=("Century Gothic", 18, "bold"), text_color="white"
-        )
-        self.favorites_label.pack(pady=10)
+        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=0.82)
 
     def go_to_profile(self):
         """Abre a tela de perfil."""

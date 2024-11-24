@@ -10,7 +10,7 @@ class FoodRegistration(ctk.CTkFrame):
         self.title = ctk.CTkLabel(
             self, text="New Meal Registration", font=("Century Gothic", 16, "bold"), text_color="white"
         )
-        self.title.pack(pady=10)
+        self.title.pack(pady=5)
 
         # Campo para o nome da refeição
         self.meal_name_entry = ctk.CTkEntry(self, placeholder_text="Enter meal name", width=300)
@@ -20,7 +20,8 @@ class FoodRegistration(ctk.CTkFrame):
         self.food_search_entry = ctk.CTkEntry(self, placeholder_text="Search for food", width=300)
         self.food_search_entry.pack(pady=5, padx=10)
 
-        self.search_results_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, height=120)
+        # Frame rolável para exibir resultados da pesquisa
+        self.search_results_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, height=90)
         self.search_results_frame.pack(padx=10, pady=10, fill="x")
 
         # Exemplo de alimentos pré-carregados
@@ -30,7 +31,7 @@ class FoodRegistration(ctk.CTkFrame):
 
         # Campo e botão para número de ingredientes
         self.ingredient_count_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.ingredient_count_frame.pack(pady=10, padx=10, fill="x")
+        self.ingredient_count_frame.pack(pady=(5,5), padx=10, fill="x")
 
         self.ingredient_count_entry = ctk.CTkEntry(
             self.ingredient_count_frame, placeholder_text="Enter number of ingredients", width=200
@@ -47,8 +48,19 @@ class FoodRegistration(ctk.CTkFrame):
         self.generate_ingredients_button.pack(side="left", padx=10)
 
         # Frame rolável para os campos de entrada de ingredientes
-        self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, height=120)
-        self.ingredients_scrollable_frame.pack(padx=10, pady=10, fill="x")
+        self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, width=300, height=10)
+        self.ingredients_scrollable_frame.pack(padx=10, pady=(5, 5), fill=None, expand=False)
+
+        # Botão de cadastrar alimento (colocado logo após o frame de ingredientes)
+        self.register_meal_button = ctk.CTkButton(
+            self,
+            text="Register Meal",
+            fg_color="#2ECC71",
+            width=300,
+            height=25,
+            command=self.register_meal_action,
+        )
+        self.register_meal_button.pack(pady=5)
 
         # Lista para armazenar dinamicamente as entradas
         self.ingredient_entries = []
@@ -96,3 +108,20 @@ class FoodRegistration(ctk.CTkFrame):
             if not entry.get():  # Encontra o próximo campo vazio
                 entry.insert(0, food_name)  # Insere o nome do alimento
                 break
+
+    def register_meal_action(self):
+        #Ação para o botão Register Meal.
+        meal_name = self.meal_name_entry.get().strip()  # Remove espaços em branco
+        ingredients = [entry.get() for entry in self.ingredient_entries if entry.get()]
+
+        if not meal_name:  # Verifica se o nome da refeição está vazio
+            ctk.CTkMessagebox.show_warning("Error", "Meal name cannot be empty!")  # Exibe uma mensagem de erro
+            return  # Impede a continuação da ação
+
+        if not ingredients:  # Opcional: Verifica se há ao menos um ingrediente
+            ctk.CTkMessagebox.show_warning("Error", "At least one ingredient is required!")  # Exibe uma mensagem de erro
+            return  # Impede a continuação da ação
+
+        print(f"Meal Name: {meal_name}")
+        print(f"Ingredients: {ingredients}")
+        # Aqui você pode implementar a lógica de salvar a refeição no banco de dados ou outra funcionalidade
