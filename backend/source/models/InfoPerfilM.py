@@ -1,7 +1,7 @@
 import sqlite3 as sq
 
 def reqPerfil(token):
-    con = sq.connect("./NutriTrack/source/models/database.db")
+    con = sq.connect("./NutriTrack/backend/source/models/database.db")
     cursor = con.cursor()
     try:
         cursor.execute("SELECT * FROM usuario WHERE tokenAcesso = ?", (token,))

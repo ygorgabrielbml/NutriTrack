@@ -3,9 +3,13 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("buscarLogin"), "NutriTrack/backend/source/models")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("novaSessao"), "NutriTrack/backend/source/models")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("resgatarToken"), "NutriTrack/backend/source/models")))
-from buscarLogin import buscarLogin
-from novaSessao import nova_sessao
-from resgatarToken import resgatar_token
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname("fecharSessao"), "NutriTrack/backend/source/models")))
+from buscarLogin import buscarLogin # type: ignore
+from novaSessao import nova_sessao # type: ignore
+from resgatarToken import resgatar_token # type: ignore
+from fecharSessao import fechar_sessao # type: ignore
+
+
 class Login:
     def __init__(self, nome, senha):
         self.nome = nome
@@ -13,12 +17,12 @@ class Login:
     
     def criar_sessao(self):
         tokenAcesso = resgatar_token(self.nome)
-        nova_sessao(True, tokenAcesso)
+        fechar_sessao()
+        nova_sessao(True, tokenAcesso[0][0])
 
     def autenticar_login(self):
         senhaBD = buscarLogin(self.nome)
-        if senhaBD == self.senha:
-            self.criar_sessao()
-            return "Login efetuado com sucesso"
+        if senhaBD[0] == self.senha:
+            return True
         else:
-            return "Nome de usuário ou senha incorretos, tente novamente"
+            return False

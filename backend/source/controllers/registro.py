@@ -2,11 +2,11 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("registrarUsuario"), "NutriTrackbackend/source/models")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("gerarTokenAcesso"), "NutriTrack/backend/source/utils")))
-from registrarUsuario import adicionar_usuarioDB
-from gerarTokenAcesso import gerarToken
+from registrarUsuario import adicionar_usuarioDB # type: ignore
+from gerarTokenAcesso import gerarToken # type: ignore
 
 
-class Usuario:
+class Registro:
     def __init__(self, nome, senha, genero, peso, idade, altura):
         self.nome = nome
         self.senha = senha
