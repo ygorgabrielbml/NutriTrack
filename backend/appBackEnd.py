@@ -79,13 +79,14 @@ def alterar_senha():
 def get_meal():
     token = verificar_sessao()
     meals = buscar_meals(token)
-    return jsonify(meals)
+    return meals
 
 @app.route("/create_meals", methods=["POST"])
 def set_meal():
     meal_name = request.json.get("meal_name")
     tokenAcesso = verificar_sessao()
     adicionar_meal(meal_name, tokenAcesso)
+    return "refeiçao adicionada"
 
 
 if __name__ == "__main__":

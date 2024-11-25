@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from buscar_alimento import BuscarAlimento  # Importa a classe para fazer a busca na API
+import requests
 
 
 class FoodRegistration(ctk.CTkFrame):
@@ -19,7 +20,7 @@ class FoodRegistration(ctk.CTkFrame):
         self.meal_name_entry = ctk.CTkEntry(self, placeholder_text="Enter meal name", width=306)
         self.meal_name_entry.pack(pady=5, padx=10)
 
-        # Frame para pesquisa de ingredientes (centralizado)
+        # Frame para pesquisa de ingredientes
         self.food_search_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.food_search_frame.pack(pady=10, padx=10)
 
@@ -29,7 +30,7 @@ class FoodRegistration(ctk.CTkFrame):
             placeholder_text="Search for ingredients",
             width=200,
         )
-        self.food_search_entry.pack(side="left", padx=(5, 5), pady=5)  # Coloca o campo de entrada à esquerda
+        self.food_search_entry.pack(side="left", padx=(5, 5), pady=5)
 
         # Botão de pesquisa
         self.food_search_button = ctk.CTkButton(
@@ -40,7 +41,7 @@ class FoodRegistration(ctk.CTkFrame):
             width=100,
             command=self.search_ingredients,
         )
-        self.food_search_button.pack(side="left", padx=5, pady=5)  # Posiciona o botão à direita do campo de entrada
+        self.food_search_button.pack(side="left", padx=5, pady=5)
 
         # Associar a tecla Enter ao campo de pesquisa
         self.food_search_entry.bind("<Return>", lambda event: self.search_ingredients())
@@ -51,7 +52,7 @@ class FoodRegistration(ctk.CTkFrame):
 
         # Campo e botão para número de ingredientes
         self.ingredient_count_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.ingredient_count_frame.pack(pady=5, padx=10)  # Centraliza o frame na janela principal
+        self.ingredient_count_frame.pack(pady=5, padx=10)
 
         self.ingredient_count_entry = ctk.CTkEntry(
             self.ingredient_count_frame, placeholder_text="Enter number of ingredients", width=200
@@ -67,14 +68,7 @@ class FoodRegistration(ctk.CTkFrame):
         )
         self.generate_ingredients_button.pack(side="left", padx=5, pady=5)
 
-        # Centralização do frame
-        self.ingredient_count_frame.pack_configure(anchor="center")
-
-        # Frame rolável para os campos de entrada de ingredientes
-        self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, width=300, height=10)
-        self.ingredients_scrollable_frame.pack(padx=10, pady=(5, 5), fill="x", expand=False)
-
-        # Botão de cadastrar alimento (colocado logo após o frame de ingredientes)
+        # Botão de cadastrar alimento (posicionado acima do frame de ingredientes)
         self.register_meal_button = ctk.CTkButton(
             self,
             text="Register Meal",
@@ -84,6 +78,10 @@ class FoodRegistration(ctk.CTkFrame):
             command=self.register_meal_action,
         )
         self.register_meal_button.pack(pady=10)
+
+        # Frame rolável para os campos de entrada de ingredientes
+        self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, width=300, height=10)
+        self.ingredients_scrollable_frame.pack(padx=10, pady=(5, 5), fill="x", expand=False)
 
         # Rótulo para mensagens de erro ou sucesso
         self.message_label = ctk.CTkLabel(self, text="", text_color="red", font=("Century Gothic", 12, "italic"))
@@ -139,7 +137,7 @@ class FoodRegistration(ctk.CTkFrame):
         # Limpa campos anteriores
         for widget in self.ingredients_scrollable_frame.winfo_children():
             widget.destroy()
-        self.ingredient_entries = []  # Resetar lista de entradas
+        self.ingredient_entries = []
 
         try:
             count = int(self.ingredient_count_entry.get())  # Número de ingredientes a serem gerados
@@ -149,35 +147,38 @@ class FoodRegistration(ctk.CTkFrame):
                     placeholder_text="Ingredient",
                     width=250,
                 )
-                # Centraliza o campo dentro do frame
                 ingredient_entry.pack(pady=5, padx=5, anchor="center")
-                self.ingredient_entries.append(ingredient_entry)  # Armazena a referência ao campo
+                self.ingredient_entries.append(ingredient_entry)
         except ValueError:
             self.display_message("Invalid number of ingredients!", error=True)
-
 
     def add_to_ingredient_input(self, food_name):
         """Adiciona o alimento selecionado ao próximo campo de ingrediente vazio."""
         for entry in self.ingredient_entries:
             if not entry.get():  # Encontra o próximo campo vazio
-                entry.insert(0, food_name)  # Insere o nome do alimento
+                entry.insert(0, food_name)
                 break
 
     def register_meal_action(self):
         """Ação para o botão Register Meal."""
-        meal_name = self.meal_name_entry.get().strip()  # Remove espaços em branco
+        meal_name = self.meal_name_entry.get().strip()
         ingredients = [entry.get() for entry in self.ingredient_entries if entry.get()]
-
-        if not meal_name:  # Verifica se o nome da refeição está vazio
+        
+        if not meal_name:
             self.display_message("Meal name cannot be empty!", error=True)
-            return  # Impede a continuação da ação
+            return
 
-        if not ingredients:  # Verifica se há ao menos um ingrediente
+        if not ingredients:
             self.display_message("At least one ingredient is required!", error=True)
-            return  # Impede a continuação da ação
+            return
 
-        # Caso os dados estejam corretos
         self.display_message(f"Meal '{meal_name}' registered successfully!", error=False)
-
+        self.set_meals(meal_name)
         print(f"Meal Name: {meal_name}")
         print(f"Ingredients: {ingredients}")
+
+    def set_meals(self, meal):
+        api_url = "http://127.0.0.1:5000"
+        response = requests.post(f"{api_url}/create_meals", json={"meal_name": meal})
+        if response.status_code == 200:
+            return "refeição criada"

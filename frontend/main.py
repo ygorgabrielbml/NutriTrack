@@ -62,8 +62,8 @@ class Main:
         # Frame de Home com integração da API
         self.frames["home"] = {
             "frame": HomeScreen(self.app, self, self.api_key),  # Adicionado: Chave da API
-            "width": 1720,
-            "height": 900
+            "width": 1366,
+            "height": 768
         }
         # Frame de Registro
         self.frames["register"] = {

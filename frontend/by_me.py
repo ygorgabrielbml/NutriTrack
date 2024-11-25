@@ -1,3 +1,4 @@
+import requests
 import customtkinter as ctk
 
 
@@ -15,6 +16,13 @@ class ByMe(ctk.CTkFrame):
         # Frame rolável para as refeições criadas
         self.scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#2D2D2D", corner_radius=10)
         self.scrollable_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Inicializa o callback para remoção de refeições
+        self.remove_meal_callback = None
+
+        # Busca inicial das refeições e atualização do frame
+        meals = self.get_meals()  # Chama o método para buscar refeições
+        self.update_meals(meals)  # Atualiza o frame com as refeições
 
     def update_meals(self, meals):
         """Atualiza o frame com as refeições criadas pelo usuário."""
@@ -55,10 +63,31 @@ class ByMe(ctk.CTkFrame):
             message_label.pack(pady=10)
 
     def remove_meal(self, meal):
-        """Remove uma refeição da lista (implementação depende da HomeScreen)."""
-        if hasattr(self, "remove_meal_callback"):
+        """Remove uma refeição da lista chamando o callback do controlador."""
+        if self.remove_meal_callback:
             self.remove_meal_callback(meal)
 
     def set_remove_meal_callback(self, callback):
         """Define o callback para remover refeições."""
         self.remove_meal_callback = callback
+
+    def get_meals(self):
+        """Busca as refeições criadas na API."""
+        api_url = "http://127.0.0.1:5000/by_me_meals"  # URL da API
+        try:
+            response = requests.get(api_url)
+            if response.status_code == 200:
+                return response.json()  # Retorna a lista de refeições da API
+            else:
+                print("Erro ao buscar refeições:", response.status_code)
+                return []
+        except requests.RequestException as e:
+            print("Erro ao conectar à API:", e)
+            return []
+
+    def refresh_meals(self):
+        """Atualiza o frame com as refeições mais recentes."""
+        meals = self.get_meals()  # Busca as refeições mais recentes da API
+        self.update_meals(meals)  # Atualiza o frame com os dados
+
+

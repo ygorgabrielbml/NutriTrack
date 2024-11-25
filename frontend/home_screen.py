@@ -16,12 +16,9 @@ class HomeScreen(ctk.CTkFrame):
         self.api_key = api_key  # Chave da API para os componentes
         self.user_meals = []  # Lista para armazenar as refeições criadas pelo usuário
 
-        meals = self.get_meals()
-        for i in meals:
-            self.user_meals.append(i)
         # Configurar tamanho da janela
-        window_width = 1920
-        window_height = 1080
+        window_width = 1366
+        window_height = 768
 
         # Obter dimensões da tela e calcular posição central
         screen_width = parent.winfo_screenwidth()
@@ -70,7 +67,7 @@ class HomeScreen(ctk.CTkFrame):
         self.main_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
         # Proporções de layout
-        total_height = 0.90  # Altura máxima ocupada
+        total_height = 0.9  # Altura máxima ocupada
         padding = 0.03  # Espaçamento entre os frames
         half_height = (total_height - padding) / 2  # Altura de cada frame
         left_right_width = 0.28  # Largura dos frames laterais
@@ -93,7 +90,8 @@ class HomeScreen(ctk.CTkFrame):
 
         # Frame no lado direito (New Meal Registration)
         self.food_registration = FoodRegistration(self.main_frame, self.api_key)  # Passa a chave da API aqui
-        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=total_height)  # Altura total
+        self.food_registration.place(relx=0.72, rely=0.05, relwidth=0.26, relheight=0.9)  # Altura total
+        
 
     def update_nutrient_data(self, nutrients):
         """Atualiza tanto o gráfico de nutrientes quanto a lista de informações."""
@@ -104,7 +102,6 @@ class HomeScreen(ctk.CTkFrame):
         """Adiciona uma refeição criada pelo usuário."""
         if meal not in self.user_meals:
             self.user_meals.append(meal)
-            self.set_meals(meal)
         self.by_me_frame.update_meals(self.user_meals)
 
     def remove_meal(self, meal):
@@ -117,14 +114,4 @@ class HomeScreen(ctk.CTkFrame):
         """Abre a tela de perfil."""
         self.controller.show_profile_frame()
 
-    def get_meals(self):
-        api_url = "http://127.0.0.1:5000"
-        response = requests.get(f"{api_url}/by_me_meals")
-        if response.status_code == 200:
-            return response
-    
-    def set_meals(self, meal):
-        api_url = "http://127.0.0.1:5000"
-        response = requests.post(f"{api_url}/create_meals", json={"meal_name": meal})
-        if response.status_code == 200:
-            return "refeição criada"
+
