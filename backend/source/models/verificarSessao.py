@@ -7,6 +7,7 @@ def verificar_sessao():
     cursor.execute(query)
     resultado = cursor.fetchone()
     if resultado:
+        print(resultado[0])
         return resultado[0]
     else:
         print("nenhuma sessao")

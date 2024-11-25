@@ -1,7 +1,7 @@
+import requests
 import customtkinter as ctk
 from PIL import Image
 import os
-import requests
 
 
 class ForgotPasswordFrame(ctk.CTkFrame):
@@ -98,6 +98,4 @@ class ForgotPasswordFrame(ctk.CTkFrame):
             api_url = "http://127.0.0.1:5000"
             response = requests.post(f"{api_url}/mudar_senha", json={"usuario": username, "senha": new_password})
             if response.status_code == 200:
-                return "senha alterada"
-            else:
-                return "erro"
+                return "senha alterada!"

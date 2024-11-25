@@ -1,29 +1,36 @@
+import requests
 import customtkinter as ctk
 from PIL import Image
 import os
 from food_list import FoodList
+from nutrient_graph import NutrientGraph
 from nutrient_info import NutrientInfo
 from food_registration import FoodRegistration
+from by_me import ByMe
 
 
 class HomeScreen(ctk.CTkFrame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, api_key):
         super().__init__(parent)
         self.controller = controller
+        self.api_key = api_key  # Chave da API para os componentes
+        self.user_meals = []  # Lista para armazenar as refeições criadas pelo usuário
 
+        meals = self.get_meals()
+        for i in meals:
+            self.user_meals.append(i)
         # Configurar tamanho da janela
         window_width = 1920
         window_height = 1080
 
+        # Obter dimensões da tela e calcular posição central
         screen_width = parent.winfo_screenwidth()
         screen_height = parent.winfo_screenheight()
-
         pos_x = (screen_width - window_width) // 2
         pos_y = (screen_height - window_height) // 2
-
         parent.geometry(f"{window_width}x{window_height}+{pos_x}+{pos_y}")
 
-        # Carregar imagem para o botão de perfil
+        # Carregar imagem do botão de perfil
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.profile_image_path = os.path.join(self.base_dir, "assets", "profile_icon.png")
         self.profile_image = ctk.CTkImage(
@@ -44,7 +51,7 @@ class HomeScreen(ctk.CTkFrame):
         )
         self.header_label.pack(side="left", padx=20, pady=10)
 
-        # Botão de perfil com estilo redondo e imagem
+        # Botão de perfil
         self.profile_button = ctk.CTkButton(
             self.header_frame,
             text="",
@@ -62,41 +69,62 @@ class HomeScreen(ctk.CTkFrame):
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
-        # Proporções para altura e largura
-        total_height = 0.85  # Altura máxima ocupada
+        # Proporções de layout
+        total_height = 0.90  # Altura máxima ocupada
         padding = 0.03  # Espaçamento entre os frames
-        half_height = (total_height - padding) / 2  # Altura de cada frame com o espaçamento considerado
-        left_right_width = 0.28  # Largura dos frames do lado esquerdo e central
-        center_x = 0.37  # Posição central para NutrientInfo e Favorites
+        half_height = (total_height - padding) / 2  # Altura de cada frame
+        left_right_width = 0.28  # Largura dos frames laterais
+        center_x = 0.37  # Posição do centro para NutrientGraph e NutrientInfo
 
-        # Frames no lado esquerdo (FoodList e History)
-        self.food_list = FoodList(self.main_frame)
+        # Frames no lado esquerdo (FoodList e By Me)
+        self.food_list = FoodList(self.main_frame, self.api_key, self.update_nutrient_data)
         self.food_list.place(relx=0.05, rely=0.05, relwidth=left_right_width, relheight=half_height)
 
-        self.history_frame = ctk.CTkFrame(self.main_frame, fg_color="#2D2D2D")
-        self.history_frame.place(relx=0.05, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
+        self.by_me_frame = ByMe(self.main_frame)
+        self.by_me_frame.set_remove_meal_callback(self.remove_meal)
+        self.by_me_frame.place(relx=0.05, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
 
-        history_label = ctk.CTkLabel(
-            self.history_frame, text="History", font=("Century Gothic", 16, "bold"), text_color="white"
-        )
-        history_label.pack(pady=10)
+        # Frames no centro (NutrientGraph e NutrientInfo)
+        self.nutrient_graph = NutrientGraph(self.main_frame)
+        self.nutrient_graph.place(relx=center_x, rely=0.05, relwidth=left_right_width, relheight=half_height)
 
-        # Frames no centro (NutrientInfo e Favorites)
         self.nutrient_info = NutrientInfo(self.main_frame)
-        self.nutrient_info.place(relx=center_x, rely=0.05, relwidth=left_right_width, relheight=half_height)
-
-        self.favorites_frame = ctk.CTkFrame(self.main_frame, fg_color="#2D2D2D")
-        self.favorites_frame.place(relx=center_x, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
-
-        favorites_label = ctk.CTkLabel(
-            self.favorites_frame, text="Favorites", font=("Century Gothic", 16, "bold"), text_color="white"
-        )
-        favorites_label.pack(pady=10)
+        self.nutrient_info.place(relx=center_x, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
 
         # Frame no lado direito (New Meal Registration)
-        self.food_registration = FoodRegistration(self.main_frame)
-        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=total_height)  # Altura total (85%)
+        self.food_registration = FoodRegistration(self.main_frame, self.api_key)  # Passa a chave da API aqui
+        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=total_height)  # Altura total
+
+    def update_nutrient_data(self, nutrients):
+        """Atualiza tanto o gráfico de nutrientes quanto a lista de informações."""
+        self.nutrient_graph.update_graph(nutrients)
+        self.nutrient_info.update_info(nutrients)
+
+    def add_meal(self, meal):
+        """Adiciona uma refeição criada pelo usuário."""
+        if meal not in self.user_meals:
+            self.user_meals.append(meal)
+            self.set_meals(meal)
+        self.by_me_frame.update_meals(self.user_meals)
+
+    def remove_meal(self, meal):
+        """Remove uma refeição criada pelo usuário."""
+        if meal in self.user_meals:
+            self.user_meals.remove(meal)
+        self.by_me_frame.update_meals(self.user_meals)
 
     def go_to_profile(self):
         """Abre a tela de perfil."""
         self.controller.show_profile_frame()
+
+    def get_meals(self):
+        api_url = "http://127.0.0.1:5000"
+        response = requests.get(f"{api_url}/by_me_meals")
+        if response.status_code == 200:
+            return response
+    
+    def set_meals(self, meal):
+        api_url = "http://127.0.0.1:5000"
+        response = requests.post(f"{api_url}/create_meals", json={"meal_name": meal})
+        if response.status_code == 200:
+            return "refeição criada"

@@ -3,7 +3,6 @@ from PIL import Image
 import os
 import requests
 
-
 class LoginFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -57,7 +56,7 @@ class LoginFrame(ctk.CTkFrame):
 
         # Botão de Login
         self.login_button = ctk.CTkButton(
-            master=self.frame, width=220, text="Login", corner_radius=6, command=self.efetuar_login
+            master=self.frame, width=220, text="Login", corner_radius=6, command=self.fazer_login
         )
         self.login_button.place(x=50, y=240)
 
@@ -82,16 +81,10 @@ class LoginFrame(ctk.CTkFrame):
         """Função chamada ao clicar em 'Esqueceu a senha?'."""
         print("Esqueceu a senha foi clicado!")
 
-    def efetuar_login(self):
+    def fazer_login(self):
         api_url = "http://127.0.0.1:5000"
-        login_input = self.username_entry.get()
-        senha_input = self.password_entry.get()
-        try:
-            response = requests.post(f"{api_url}/login", json={"usuario":login_input, "senha": senha_input})
-            if response.status_code == 200:
-                mensagem = response.json().get("mensagem")
-                self.controller.show_home_frame()
-            else:
-                pass
-        except requests.exceptions.RequestException as e:
-            print(f"erro ao conectar ao servidor: {e}")
+        nome = self.username_entry.get()
+        senha = self.password_entry.get()
+        response = requests.post(f"{api_url}/login", json={"usuario": nome, "senha": senha})
+        if response.status_code == 200:
+            self.controller.show_home_frame()

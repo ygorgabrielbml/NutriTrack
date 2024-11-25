@@ -1,66 +1,110 @@
 import customtkinter as ctk
-from PIL import Image
-import os
+from buscar_alimento import BuscarAlimento
+import pandas as pd
 
 
 class FoodList(ctk.CTkFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, api_key, update_nutrient_callback):
         super().__init__(parent)
         self.configure(fg_color="#3D3D3D")
 
-        # Barra de pesquisa
+        self.buscar_alimento = BuscarAlimento(api_key)
+        self.update_nutrient_callback = update_nutrient_callback
+
+        # Frame para campo de entrada e botão
+        self.search_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.search_frame.pack(fill="x", padx=10, pady=10)
+
+        # Campo de pesquisa
         self.search_entry = ctk.CTkEntry(
-            self, placeholder_text="Search for foods", width=250, height=30, fg_color="#5C5C5C",
-            text_color="white", border_color="#5C5C5C"
+            self.search_frame,
+            placeholder_text="Search for foods",
+            width=250,
+            fg_color="#5C5C5C",
+            text_color="white",
+            border_color="#5C5C5C"
         )
-        self.search_entry.pack(pady=10)
+        self.search_entry.pack(side="left", padx=5, pady=10, fill="x", expand=True)
 
-        # Lista de comidas com os botões de coração
+        # Botão de pesquisa
+        self.search_button = ctk.CTkButton(
+            self.search_frame,
+            text="Search",
+            fg_color="#2ECC71",
+            text_color="white",
+            command=self.search_foods
+        )
+        self.search_button.pack(side="left", padx=5)
+
+        # Associar a tecla Enter ao campo de pesquisa
+        self.search_entry.bind("<Return>", lambda event: self.search_foods())
+
+        # Lista de comidas em um frame rolável
         self.food_list_frame = ctk.CTkScrollableFrame(self, fg_color="#3D3D3D", width=280)
-        self.food_list_frame.pack(fill="both", expand=True)
+        self.food_list_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Carregar imagem do coração
-        heart_image_path = os.path.join(os.path.dirname(__file__), "assets", "heart_icon.png")
-        self.heart_image = ctk.CTkImage(Image.open(heart_image_path), size=(20, 20))
+    def search_foods(self):
+        """Busca alimentos na API e atualiza a lista dinamicamente."""
+        query = self.search_entry.get().strip()
 
-        # Itens da lista de alimentos
-        for food in ["Yakisoba", "Salad", "Smoothie", "Grilled Chicken"]:
-            self.add_food_item(food)
+        # Limpa os itens antigos
+        for widget in self.food_list_frame.winfo_children():
+            widget.destroy()
 
-    def add_food_item(self, food_name):
-        """Adiciona um item como botão e um botão de coração ao lado."""
-        food_row = ctk.CTkFrame(self.food_list_frame, fg_color="transparent")
-        food_row.pack(fill="x", pady=5)
+        if not query:
+            self.display_message("Please enter a valid search term.")
+            return
 
-        # Botão representando o alimento
+        alimentos = self.buscar_alimento.encontrar_alimento(query)
+
+        if alimentos is not None:
+            alimentos_filtrados = self.buscar_alimento.filtrar_colunas(alimentos)
+            if alimentos_filtrados is not None and not alimentos_filtrados.empty:
+                for _, row in alimentos_filtrados.iterrows():
+                    food_name = row.get("description", "Unknown Food")
+                    fdc_id = row.get("fdcId", None)
+                    self.add_food_item(food_name, fdc_id)
+            else:
+                self.display_message("No foods found.")
+        else:
+            self.display_message("Error while searching for foods.")
+
+    def add_food_item(self, food_name, fdc_id):
+        """Adiciona um item representando um alimento à lista."""
         food_button = ctk.CTkButton(
-            food_row,
+            self.food_list_frame,
             text=food_name,
             font=("Century Gothic", 14),
             fg_color="#3D3D3D",
             hover_color="#555555",
             text_color="white",
-            command=lambda: self.food_action(food_name)  # Ação ao clicar no botão
+            command=lambda: self.food_action(food_name, fdc_id)
         )
-        food_button.pack(side="left", padx=5, fill="x", expand=True)
+        food_button.pack(fill="x", pady=5, padx=5)
 
-        # Botão de coração ao lado
-        heart_button = ctk.CTkButton(
-            food_row,
-            text="",
-            image=self.heart_image,
-            width=30,
-            height=30,
-            fg_color="transparent",
-            hover_color="#555555",
-            command=lambda: self.toggle_favorite(food_name)  # Ação ao clicar no coração
-        )
-        heart_button.pack(side="right", padx=5)
+    def display_message(self, message):
+        """Exibe uma mensagem no frame de resultados."""
+        label = ctk.CTkLabel(self.food_list_frame, text=message, text_color="white")
+        label.pack(pady=10)
 
-    def food_action(self, food_name):
+    def food_action(self, food_name, fdc_id):
         """Ação ao clicar no botão de alimento."""
-        print(f"Selected food: {food_name}")
+        nutrients = self.buscar_alimento.buscar_nutrientes(fdc_id)
 
-    def toggle_favorite(self, food_name):
-        """Ação ao clicar no botão de coração."""
-        print(f"Favorited: {food_name}")
+        # Processar nutrientes para garantir que as colunas necessárias existam
+        if nutrients is not None and "nutrient" in nutrients.columns and "amount" in nutrients.columns:
+            nutrients_expanded = nutrients["nutrient"].apply(pd.Series)
+            nutrients_expanded["amount"] = nutrients["amount"]
+
+            if "unitName" in nutrients.columns:
+                nutrients_expanded["unitName"] = nutrients["unitName"]
+
+            nutrients = nutrients_expanded.rename(columns={"name": "name"})
+            nutrients = nutrients.dropna(subset=["amount"])  # Remove linhas com valores NaN em 'amount'
+            nutrients = nutrients[nutrients["amount"] > 0]  # Apenas nutrientes com valores > 0
+        else:
+            nutrients = pd.DataFrame()  # Retornar DataFrame vazio em caso de erro
+
+        # Atualizar o NutrientGraph e NutrientInfo
+        self.update_nutrient_callback(nutrients)
+

@@ -1,7 +1,7 @@
+import requests
 import customtkinter as ctk
 from PIL import Image
 import os
-import requests
 
 
 class RegisterFrame(ctk.CTkFrame):
@@ -67,7 +67,6 @@ class RegisterFrame(ctk.CTkFrame):
 
     def register_action(self):
         """Função para registrar os dados do usuário."""
-        api_url = "http://127.0.0.1:5000"
         name = self.name_entry.get()
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
@@ -84,8 +83,7 @@ class RegisterFrame(ctk.CTkFrame):
         elif password != confirm_password:
             print("Passwords do not match!")
         else:
+            api_url = "http://127.0.0.1:5000"
             response = requests.post(f"{api_url}/registro", json={"usuario": name, "senha": password, "csenha": confirm_password, "peso": weight, "genero": gender, "idade": age, "altura": height})
             if response.status_code == 200:
-                return "usuario registrado com sucesso"
-            else:
-                return "erro"
+                return "registro efetuado com sucesso"
