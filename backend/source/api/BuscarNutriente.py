@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import customtkinter as ctk
 from BuscarAlimento import BuscarAlimento
 
 class BuscarNutriente:
@@ -9,7 +10,6 @@ class BuscarNutriente:
 
     def pegar_nutrientes(self, fdc_id):
         params = {"api_key": self.api_key}
-
         try:
             response = requests.get(url=f"{self.details_url}/{fdc_id}", params=params)
             response.raise_for_status()
@@ -38,50 +38,72 @@ class BuscarNutriente:
             print("Estrutura inesperada de dados nutricionais.")
             return None
 
-    def mostrar_resultados(self, nutrientes_processados):
-        print("\nTabela de nutrientes:")
-        print(nutrientes_processados)
-        print()
+
+class App(ctk.CTk):
+    def __init__(self, api_key):
+        super().__init__()
+        self.title("Consulta Nutricional")
+        self.geometry("600x400")
+        self.api_key = api_key
+        self.buscar_alimento = BuscarAlimento(api_key=self.api_key)
+        self.buscar_nutriente = BuscarNutriente(api_key=self.api_key)
+
+        # Widgets
+        self.label = ctk.CTkLabel(self, text="Pesquise por um alimento (em inglês):")
+        self.label.pack(pady=10)
+
+        self.entry = ctk.CTkEntry(self, placeholder_text="Ex: Apple")
+        self.entry.pack(pady=10)
+
+        self.search_button = ctk.CTkButton(self, text="Buscar Alimentos", command=self.buscar_alimentos)
+        self.search_button.pack(pady=10)
+
+        self.results_frame = ctk.CTkFrame(self)
+        self.results_frame.pack(pady=20, fill="both", expand=True)
+
+    def buscar_alimentos(self):
+        nome_alimento = self.entry.get()
+        alimentos = self.buscar_alimento.encontrar_alimento(nome_alimento)
+
+        for widget in self.results_frame.winfo_children():
+            widget.destroy()
+
+        if alimentos is not None:
+            alimentos_filtrados = self.buscar_alimento.filtrar_colunas(alimentos)
+
+            if alimentos_filtrados is not None:
+                for index, row in alimentos_filtrados.iterrows():
+                    alimento_button = ctk.CTkButton(
+                        self.results_frame,
+                        text=row["description"],
+                        command=lambda fdc_id=row["fdcId"]: self.mostrar_nutrientes(fdc_id)
+                    )
+                    alimento_button.pack(pady=5, fill="x")
+            else:
+                ctk.CTkLabel(self.results_frame, text="Nenhum dado filtrado encontrado.").pack(pady=10)
+        else:
+            ctk.CTkLabel(self.results_frame, text="Nenhum alimento encontrado.").pack(pady=10)
+
+    def mostrar_nutrientes(self, fdc_id):
+        nutrientes_df = self.buscar_nutriente.pegar_nutrientes(fdc_id)
+
+        if nutrientes_df is not None:
+            nutrientes_processados = self.buscar_nutriente.filtrar_colunas(nutrientes_df)
+
+            if nutrientes_processados is not None:
+                for widget in self.results_frame.winfo_children():
+                    widget.destroy()
+
+                for _, row in nutrientes_processados.iterrows():
+                    texto = f"{row['name']}: {row['amount']} {row['unitName']}"
+                    ctk.CTkLabel(self.results_frame, text=texto).pack(pady=2, anchor="w")
+            else:
+                ctk.CTkLabel(self.results_frame, text="Nenhum nutriente encontrado.").pack(pady=10)
+        else:
+            ctk.CTkLabel(self.results_frame, text="Erro ao buscar nutrientes.").pack(pady=10)
+
 
 if __name__ == "__main__":
     API_KEY = "HZggsOOEiOiWrnsS5vxzHwgygzuMJm7WHYPV6CIG"
-    buscar_alimento = BuscarAlimento(api_key=API_KEY)
-
-    nome_alimento = input("Pesquise por um alimento em inglês: ")
-    alimentos = buscar_alimento.encontrar_alimento(nome_alimento)
-
-    if alimentos is not None:
-        alimentos_filtrados = buscar_alimento.filtrar_colunas(alimentos)
-
-        if alimentos_filtrados is not None:
-            print("\nResultados encontrados:")
-            print()
-            buscar_alimento.mostrar_resultados(alimentos_filtrados)
-
-            try:
-                # Seleção de índice
-                index = int(input("Escolha o índice do alimento para buscar os nutrientes: "))
-                if index < 0 or index >= len(alimentos_filtrados):
-                    raise ValueError("Índice fora do intervalo dos resultados disponíveis.")
-
-                # Obtém o fdcId do alimento selecionado
-                fdc_id = alimentos_filtrados.iloc[index]["fdcId"]
-
-                # Instancia a classe BuscarNutriente
-                buscar_nutriente = BuscarNutriente(api_key=API_KEY)
-
-                # Busca os nutrientes
-                nutrientes_df = buscar_nutriente.pegar_nutrientes(fdc_id)
-                if nutrientes_df is not None:
-                    # Filtra as colunas relevantes
-                    nutrientes_processados = buscar_nutriente.filtrar_colunas(nutrientes_df)
-                    if nutrientes_processados is not None:
-                        # Exibe os resultados
-                        buscar_nutriente.mostrar_resultados(nutrientes_processados)
-
-            except ValueError as e:
-                print(f"Erro: {e}")
-        else:
-            print("Não foi possível filtrar os alimentos.")
-    else:
-        print("Nenhum alimento encontrado. Tente novamente.")
+    app = App(api_key=API_KEY)
+    app.mainloop()

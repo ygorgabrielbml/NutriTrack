@@ -7,11 +7,12 @@ from forgot_password_frame import ForgotPasswordFrame
 from profile_screen import ProfileScreen
 
 
-class LoginApp:
+class Main:
     def __init__(self):
         # Configuração inicial
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.assets_dir = os.path.join(self.base_dir, "assets")
+        self.api_key = "HZggsOOEiOiWrnsS5vxzHwgygzuMJm7WHYPV6CIG"  # Adicionado: Chave da API
 
         # Configurar a janela principal
         self.app = ctk.CTk()
@@ -55,17 +56,17 @@ class LoginApp:
             "width": 600,
             "height": 440
         }
-        # Frame de Home
+        # Frame de Home com integração da API
         self.frames["home"] = {
-            "frame": HomeScreen(self.app, self),
+            "frame": HomeScreen(self.app, self, self.api_key),  # Adicionado: Chave da API
             "width": 1720,
-            "height": 900  # Ajuste para eliminar espaço inferior
+            "height": 900
         }
         # Frame de Registro
         self.frames["register"] = {
             "frame": RegisterFrame(self.app, self),
             "width": 600,
-            "height": 440  # Altura ideal para registro
+            "height": 440
         }
         # Frame de Recuperação de Senha
         self.frames["forgot_password"] = {
@@ -82,8 +83,8 @@ class LoginApp:
                 "height": "175",
                 "weight": "70",
             }),
-            "width": 500,  # Largura menor para a tela de perfil
-            "height": 400  # Altura ajustada para a tela de perfil
+            "width": 500,
+            "height": 400
         }
 
     def show_frame(self, frame_name):
@@ -121,5 +122,5 @@ class LoginApp:
 
 
 if __name__ == "__main__":
-    app = LoginApp()
+    app = Main()
     app.run()
