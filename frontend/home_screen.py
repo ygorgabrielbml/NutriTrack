@@ -13,7 +13,7 @@ class HomeScreen(ctk.CTkFrame):
 
         # Configurar tamanho da janela
         window_width = 1920
-        window_height = 1080  # Altura aumentada para acomodar os frames quadrados
+        window_height = 1080
 
         screen_width = parent.winfo_screenwidth()
         screen_height = parent.winfo_screenheight()
@@ -62,15 +62,40 @@ class HomeScreen(ctk.CTkFrame):
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
-        # Componentes principais
+        # Proporções para altura e largura
+        total_height = 0.85  # Altura máxima ocupada
+        padding = 0.03  # Espaçamento entre os frames
+        half_height = (total_height - padding) / 2  # Altura de cada frame com o espaçamento considerado
+        left_right_width = 0.28  # Largura dos frames do lado esquerdo e central
+        center_x = 0.37  # Posição central para NutrientInfo e Favorites
+
+        # Frames no lado esquerdo (FoodList e History)
         self.food_list = FoodList(self.main_frame)
-        self.food_list.place(relx=0.05, rely=0.05, relwidth=0.3, relheight=0.77)
+        self.food_list.place(relx=0.05, rely=0.05, relwidth=left_right_width, relheight=half_height)
 
+        self.history_frame = ctk.CTkFrame(self.main_frame, fg_color="#2D2D2D")
+        self.history_frame.place(relx=0.05, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
+
+        history_label = ctk.CTkLabel(
+            self.history_frame, text="History", font=("Century Gothic", 16, "bold"), text_color="white"
+        )
+        history_label.pack(pady=10)
+
+        # Frames no centro (NutrientInfo e Favorites)
         self.nutrient_info = NutrientInfo(self.main_frame)
-        self.nutrient_info.place(relx=0.37, rely=0.05, relwidth=0.3, relheight=0.77)
+        self.nutrient_info.place(relx=center_x, rely=0.05, relwidth=left_right_width, relheight=half_height)
 
+        self.favorites_frame = ctk.CTkFrame(self.main_frame, fg_color="#2D2D2D")
+        self.favorites_frame.place(relx=center_x, rely=0.05 + half_height + padding, relwidth=left_right_width, relheight=half_height)
+
+        favorites_label = ctk.CTkLabel(
+            self.favorites_frame, text="Favorites", font=("Century Gothic", 16, "bold"), text_color="white"
+        )
+        favorites_label.pack(pady=10)
+
+        # Frame no lado direito (New Meal Registration)
         self.food_registration = FoodRegistration(self.main_frame)
-        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=0.77)
+        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=total_height)  # Altura total (85%)
 
     def go_to_profile(self):
         """Abre a tela de perfil."""

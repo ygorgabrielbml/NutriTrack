@@ -10,7 +10,7 @@ class FoodRegistration(ctk.CTkFrame):
         self.title = ctk.CTkLabel(
             self, text="New Meal Registration", font=("Century Gothic", 16, "bold"), text_color="white"
         )
-        self.title.pack(pady=5)
+        self.title.pack(pady=10)
 
         # Campo para o nome da refeição
         self.meal_name_entry = ctk.CTkEntry(self, placeholder_text="Enter meal name", width=300)
@@ -31,12 +31,12 @@ class FoodRegistration(ctk.CTkFrame):
 
         # Campo e botão para número de ingredientes
         self.ingredient_count_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.ingredient_count_frame.pack(pady=(5,5), padx=10, fill="x")
+        self.ingredient_count_frame.pack(pady=5, padx=10)  # Centraliza o frame na janela principal
 
         self.ingredient_count_entry = ctk.CTkEntry(
             self.ingredient_count_frame, placeholder_text="Enter number of ingredients", width=200
         )
-        self.ingredient_count_entry.pack(side="left", padx=10)
+        self.ingredient_count_entry.pack(side="left", padx=(5, 5), pady=5)
 
         self.generate_ingredients_button = ctk.CTkButton(
             self.ingredient_count_frame,
@@ -45,7 +45,10 @@ class FoodRegistration(ctk.CTkFrame):
             fg_color="#2ECC71",
             width=100,
         )
-        self.generate_ingredients_button.pack(side="left", padx=10)
+        self.generate_ingredients_button.pack(side="left", padx=5, pady=5)
+
+        # Centralização do frame
+        self.ingredient_count_frame.pack_configure(anchor="center")
 
         # Frame rolável para os campos de entrada de ingredientes
         self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, width=300, height=10)
@@ -60,7 +63,7 @@ class FoodRegistration(ctk.CTkFrame):
             height=25,
             command=self.register_meal_action,
         )
-        self.register_meal_button.pack(pady=5)
+        self.register_meal_button.pack(pady=10)
 
         # Lista para armazenar dinamicamente as entradas
         self.ingredient_entries = []
@@ -110,7 +113,7 @@ class FoodRegistration(ctk.CTkFrame):
                 break
 
     def register_meal_action(self):
-        #Ação para o botão Register Meal.
+        """Ação para o botão Register Meal."""
         meal_name = self.meal_name_entry.get().strip()  # Remove espaços em branco
         ingredients = [entry.get() for entry in self.ingredient_entries if entry.get()]
 
