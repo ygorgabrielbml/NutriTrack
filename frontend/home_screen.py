@@ -12,8 +12,8 @@ class HomeScreen(ctk.CTkFrame):
         self.controller = controller
 
         # Configurar tamanho da janela
-        window_width = 1400
-        window_height = 900  # Altura aumentada para acomodar os frames quadrados
+        window_width = 1920
+        window_height = 1080  # Altura aumentada para acomodar os frames quadrados
 
         screen_width = parent.winfo_screenwidth()
         screen_height = parent.winfo_screenheight()
@@ -64,13 +64,13 @@ class HomeScreen(ctk.CTkFrame):
 
         # Componentes principais
         self.food_list = FoodList(self.main_frame)
-        self.food_list.place(relx=0.05, rely=0.05, relwidth=0.3, relheight=0.82)
+        self.food_list.place(relx=0.05, rely=0.05, relwidth=0.3, relheight=0.77)
 
         self.nutrient_info = NutrientInfo(self.main_frame)
-        self.nutrient_info.place(relx=0.37, rely=0.05, relwidth=0.3, relheight=0.82)
+        self.nutrient_info.place(relx=0.37, rely=0.05, relwidth=0.3, relheight=0.77)
 
         self.food_registration = FoodRegistration(self.main_frame)
-        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=0.82)
+        self.food_registration.place(relx=0.69, rely=0.05, relwidth=0.26, relheight=0.77)
 
     def go_to_profile(self):
         """Abre a tela de perfil."""

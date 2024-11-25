@@ -49,7 +49,7 @@ class FoodRegistration(ctk.CTkFrame):
 
         # Frame rolável para os campos de entrada de ingredientes
         self.ingredients_scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#5C5C5C", corner_radius=10, width=300, height=10)
-        self.ingredients_scrollable_frame.pack(padx=10, pady=(5, 5), fill=None, expand=False)
+        self.ingredients_scrollable_frame.pack(padx=10, pady=(5, 5), fill="x", expand=False)
 
         # Botão de cadastrar alimento (colocado logo após o frame de ingredientes)
         self.register_meal_button = ctk.CTkButton(

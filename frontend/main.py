@@ -35,14 +35,21 @@ class LoginApp:
         self.show_frame("login")
 
     def set_window_size(self, width, height):
-        """Define o tamanho da janela e centraliza na tela."""
+        """Define o tamanho da janela, considerando a barra de tarefas, e centraliza na tela."""
+        # Obter largura e altura total da tela
         largura_tela = self.app.winfo_screenwidth()
         altura_tela = self.app.winfo_screenheight()
 
-        pos_x = (largura_tela - width) // 2
-        pos_y = (altura_tela - height) // 2
+        # Estimativa da altura da barra de tarefas
+        altura_barra_tarefas = 50  # Ajuste conforme necessário
 
+        # Calcula posição central considerando a barra de tarefas
+        pos_x = (largura_tela - width) // 2
+        pos_y = (altura_tela - height - altura_barra_tarefas) // 2
+
+        # Define o tamanho e a posição da janela
         self.app.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
+
 
     def create_frames(self):
         """Precarrega todos os frames com tamanhos consistentes."""
@@ -55,8 +62,8 @@ class LoginApp:
         # Frame de Home
         self.frames["home"] = {
             "frame": HomeScreen(self.app, self),
-            "width": 1400,
-            "height": 900
+            "width": 1720,
+            "height": 950
         }
         # Frame de Registro
         self.frames["register"] = {
