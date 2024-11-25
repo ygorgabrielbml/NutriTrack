@@ -26,9 +26,6 @@ class NutrientGraph(ctk.CTkFrame):
     def update_graph(self, nutrients):
         """Atualiza os dados nutricionais e exibe o gráfico."""
         try:
-            print("\nDados recebidos (brutos):")
-            print(nutrients)
-
             if nutrients is not None and isinstance(nutrients, pd.DataFrame) and not nutrients.empty:
                 # Processar os dados com pandas
                 processed_data = self._process_nutrients(nutrients)
@@ -52,11 +49,8 @@ class NutrientGraph(ctk.CTkFrame):
                 nutrients = nutrients[nutrients["amount"] > 1]  # Excluir valores irrelevantes
                 nutrients = nutrients.sort_values(by="amount", ascending=False)
                 return nutrients
-
-            print("Estrutura de dados não possui colunas esperadas ('name', 'amount').")
             return pd.DataFrame()
-        except Exception as e:
-            print(f"Erro ao processar nutrientes: {e}")
+        except Exception:
             return pd.DataFrame()
 
     def _create_pie_chart(self, nutrients_df):
