@@ -1,7 +1,7 @@
 import sqlite3
 
 def adicionar_usuarioDB(nome, senha, tokenAcesso, genero, peso, idade, altura):
-    con = sqlite3.connect("./NutriTrack/source/models/database.db")
+    con = sqlite3.connect("./NutriTrack/backend/source/models/database.db")
     cursor = con.cursor()
     
     try:
