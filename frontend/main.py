@@ -72,13 +72,7 @@ class LoginApp:
         }
         # Frame de Perfil
         self.frames["profile"] = {
-            "frame": ProfileScreen(self.app, self, {
-                "name": "John Doe",
-                "gender": "Male",
-                "age": "25",
-                "height": "175",
-                "weight": "70",
-            }),
+            "frame": ProfileScreen(self.app, self),
             "width": 500,  # Largura menor para a tela de perfil
             "height": 400  # Altura ajustada para a tela de perfil
         }

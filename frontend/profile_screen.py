@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import requests
 
+
 class ProfileScreen(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -24,37 +25,13 @@ class ProfileScreen(ctk.CTkFrame):
         self.main_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
         # Informações do usuário (alinhadas à esquerda)
-        self.create_info_row("Name", self.user_data["name"], 0)
-        self.create_info_row("Gender", self.user_data["gender"], 1)
-        self.create_info_row("Age", self.user_data["age"], 2)
-        self.create_info_row("Height", f"{self.user_data['height']} cm", 3)
+        self.create_info_row("Name", self.user_data["nome"], 0)
+        self.create_info_row("Gender", self.user_data["genero"], 1)
+        self.create_info_row("Age", self.user_data["idade"], 2)
+        self.create_info_row("Height", f"{self.user_data['altura']} cm", 3)
 
-        # Exibir informações do usuário em colunas
-        self.name_label = self.create_info_label("Name", self.user_data["nome"])
-        self.name_label.grid(row=0, column=0, padx=20, pady=10, sticky="w")
-
-        self.gender_label = self.create_info_label("Gender", self.user_data["genero"])
-        self.gender_label.grid(row=1, column=0, padx=20, pady=10, sticky="w")
-
-        self.age_label = self.create_info_label("Age", self.user_data["idade"])
-        self.age_label.grid(row=2, column=0, padx=20, pady=10, sticky="w")
-
-        self.height_label = self.create_info_label("Height", f"{self.user_data['altura']} cm")
-        self.height_label.grid(row=3, column=0, padx=20, pady=10, sticky="w")
-
-        # Campo para editar peso
-        self.weight_label = ctk.CTkLabel(self.info_frame, text="Weight (kg):", font=("Century Gothic", 15))
-        self.weight_label.grid(row=4, column=0, padx=20, pady=10, sticky="w")
-
-        self.weight_entry = ctk.CTkEntry(self.info_frame, width=150, justify="center")
-        self.weight_entry.insert(0, str(self.user_data["peso"]))
-        self.weight_entry.grid(row=4, column=1, padx=10, pady=10)
-
-        # Botão para salvar o peso atualizado
-        self.update_weight_button = ctk.CTkButton(
-            self.info_frame, text="Update Weight", width=150, command=self.update_weight, fg_color="#2C7D59"
         # Peso e IMC
-        self.weight_value_label = self.create_info_row("Weight", f"{self.user_data['weight']} kg", 4)
+        self.weight_value_label = self.create_info_row("Weight", f"{self.user_data['peso']} kg", 4)
         self.imc_label = self.create_info_row("IMC", self.calculate_imc(), 5)
 
         # Campo para atualizar o peso
@@ -64,7 +41,7 @@ class ProfileScreen(ctk.CTkFrame):
         self.update_weight_label.grid(row=6, column=0, padx=20, pady=5, sticky="w")
 
         self.weight_entry = ctk.CTkEntry(self.main_frame, width=150, justify="center")
-        self.weight_entry.insert(0, str(self.user_data["weight"]))
+        self.weight_entry.insert(0, str(self.user_data["peso"]))
         self.weight_entry.grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
         self.save_button = ctk.CTkButton(
@@ -104,8 +81,8 @@ class ProfileScreen(ctk.CTkFrame):
     def calculate_imc(self):
         """Calcula e retorna o IMC formatado."""
         try:
-            weight = float(self.user_data["weight"])
-            height_m = float(self.user_data["height"]) / 100  # Converter cm para metros
+            weight = float(self.user_data["peso"])
+            height_m = float(self.user_data["altura"]) / 100  # Converter cm para metros
             imc = weight / (height_m ** 2)
             return f"{imc:.2f}"  # Retorna o IMC formatado
         except (ValueError, KeyError, ZeroDivisionError):
@@ -115,9 +92,17 @@ class ProfileScreen(ctk.CTkFrame):
         """Atualiza o peso do usuário e recalcula o IMC."""
         try:
             self.update_peso()
-            ctk.CTkLabel(
-                self.info_frame, text="Weight updated successfully!", font=("Century Gothic", 12), text_color="green"
-            ).grid(row=6, columnspan=2, pady=5)
+
+            # Atualizar peso na interface
+            # self.weight_value_label.configure(text=f"{new_weight} kg")
+
+            # Atualizar IMC
+            self.imc_label.configure(text=self.calculate_imc())
+
+            # Exibir mensagem de sucesso
+            self.feedback_label.configure(
+                text="Weight updated successfully!", text_color="green"
+            )
         except ValueError:
             # Exibir mensagem de erro
             self.feedback_label.configure(
@@ -131,7 +116,7 @@ class ProfileScreen(ctk.CTkFrame):
     def get_userdata(self):
         api_url = "http://127.0.0.1:5000"
         try:
-            # Faz a requisição GET
+            # Faz a requisição GET.
             dados_perfil = requests.get(f"{api_url}/perfil/mostrar_infos")
             
             # Verifica o status code
@@ -156,4 +141,3 @@ class ProfileScreen(ctk.CTkFrame):
                 mensagem = "erro"
         except requests.exceptions.RequestException as e:
             print(f"erro: {e}")
-
